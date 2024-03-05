@@ -19,6 +19,9 @@ public:
 	ASCharacter();
 
 protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AActor> projectileClass;
+	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* springArmComp;
 
@@ -30,6 +33,7 @@ protected:
 
 	void MoveForward(float value);
 	void MoveRight(float value);
+	void PrimaryAttack();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
