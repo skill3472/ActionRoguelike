@@ -2,6 +2,8 @@
 
 
 #include "ActionRoguelike/Public/SCharacter.h"
+
+#include "SInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -20,6 +22,8 @@ ASCharacter::ASCharacter()
 
 	springArmComp->bUsePawnControlRotation  = true;
 	bUseControllerRotationYaw = false;
+
+	interactionComp = CreateDefaultSubobject<USInteractionComponent>("interactionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
@@ -57,7 +61,18 @@ void ASCharacter::Jump()
 	Super::Jump();
 }
 
+void ASCharacter::PrimaryInteraction()
+{
+	interactionComp->PrimaryInteraction();
+}
+
 void ASCharacter::PrimaryAttack()
+{
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, primaryAttackDelay);
+}
+
+void ASCharacter::PrimaryAttack_TimeElapsed()
 {
 	FVector handLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	FTransform spawnTM = FTransform(GetControlRotation(), handLocation);
@@ -88,6 +103,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteraction);
 
 }
 
