@@ -22,7 +22,7 @@ public:
 
 protected:
 	
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	USphereComponent* sphereComp;
 
 	UPROPERTY(VisibleAnywhere)
