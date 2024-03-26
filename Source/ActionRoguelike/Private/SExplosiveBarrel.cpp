@@ -32,6 +32,9 @@ void ASExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 {
 	ExplosionSphere->FireImpulse();
 	UE_LOG(LogTemp, Log, TEXT("OnActorHit reached (ExplosiveBarrel)"));
+
+	FString CombinedString = FString::Printf(TEXT("Hit at location %s"), *Hit.ImpactPoint.ToString());
+	DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
 }
 
 // Called every frame

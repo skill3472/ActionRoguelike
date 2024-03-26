@@ -7,6 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -75,7 +76,32 @@ void ASCharacter::PrimaryAttack()
 void ASCharacter::PrimaryAttack_TimeElapsed()
 {
 	FVector handLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-	FTransform spawnTM = FTransform(GetControlRotation(), handLocation);
+
+	FHitResult hit;
+	FRotator projectileRotation;
+	APlayerCameraManager *camManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	FVector start = camManager->GetCameraLocation();
+	FVector camForward  = camManager->GetCameraRotation().Vector();
+	FVector end = start + (camForward * 15000);
+	FCollisionObjectQueryParams ObjectQueryParams;
+	FCollisionQueryParams QueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	
+	bool bHitTarget = GetWorld()->LineTraceSingleByObjectType(hit, start, end, ObjectQueryParams,  QueryParams);
+	FVector hitPoint = hit.ImpactPoint;
+	if(bHitTarget)
+	{
+		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, hitPoint);
+		DrawDebugLine(GetWorld(), start, hit.Location, FColor::Purple, false, 2.0f, 0, 2.0f);
+	}
+	else
+	{
+		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, end);
+		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
+	}
+	
+	FTransform spawnTM = FTransform(projectileRotation, handLocation); // New rotation code here?
 	
 	FActorSpawnParameters spawnParams;
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
