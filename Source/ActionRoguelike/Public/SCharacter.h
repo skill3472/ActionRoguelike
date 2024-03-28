@@ -27,6 +27,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TSubclassOf<AActor> secondaryProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category="Abilities")
+	TSubclassOf<AActor> teleportProjectileClass;
 	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* springArmComp;
@@ -48,6 +51,7 @@ protected:
 
 	FTimerHandle TimerHandle_PrimaryAttack;
 	FTimerHandle TimerHandle_SecondaryAttack;
+	FTimerHandle TimerHandle_TeleportAbility;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -58,6 +62,8 @@ protected:
 	void PrimaryAttack_TimeElapsed();
 	void SecondaryAttack();
 	void SecondaryAttack_TimeElapsed();
+	void TeleportAbility();
+	void TeleportAbility_TimeElapsed();
 	void Jump();
 	void PrimaryInteraction();
 public:	

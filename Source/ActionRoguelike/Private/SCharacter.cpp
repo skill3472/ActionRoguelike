@@ -104,7 +104,7 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
 	}
 	
-	FTransform spawnTM = FTransform(projectileRotation, handLocation); // New rotation code here?
+	FTransform spawnTM = FTransform(projectileRotation, handLocation);
 	
 	FActorSpawnParameters spawnParams;
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -147,13 +147,56 @@ void ASCharacter::SecondaryAttack_TimeElapsed()
 		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
 	}
 	
-	FTransform spawnTM = FTransform(projectileRotation, handLocation); // New rotation code here?
+	FTransform spawnTM = FTransform(projectileRotation, handLocation);
 	
 	FActorSpawnParameters spawnParams;
 	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	spawnParams.Instigator = this;
 	
 	GetWorld()->SpawnActor<AActor>(secondaryProjectileClass, spawnTM, spawnParams);
+}
+
+void ASCharacter::TeleportAbility()
+{
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_TeleportAbility, this, &ASCharacter::TeleportAbility_TimeElapsed, attackDelay);
+}
+
+void ASCharacter::TeleportAbility_TimeElapsed()
+{
+	FVector handLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+
+	FHitResult hit;
+	FRotator projectileRotation;
+	APlayerCameraManager *camManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	FVector start = camManager->GetCameraLocation();
+	FVector camForward  = camManager->GetCameraRotation().Vector();
+	FVector end = start + (camForward * 15000);
+	FCollisionObjectQueryParams ObjectQueryParams;
+	FCollisionQueryParams QueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	
+	bool bHitTarget = GetWorld()->LineTraceSingleByObjectType(hit, start, end, ObjectQueryParams,  QueryParams);
+	FVector hitPoint = hit.ImpactPoint;
+	if(bHitTarget)
+	{
+		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, hitPoint);
+		DrawDebugLine(GetWorld(), start, hit.Location, FColor::Purple, false, 2.0f, 0, 2.0f);
+	}
+	else
+	{
+		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, end);
+		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
+	}
+	
+	FTransform spawnTM = FTransform(projectileRotation, handLocation);
+	
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnParams.Instigator = this;
+	
+	GetWorld()->SpawnActor<AActor>(teleportProjectileClass, spawnTM, spawnParams);
 }
 
 // Called every frame
@@ -177,6 +220,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &ASCharacter::SecondaryAttack);
+	PlayerInputComponent->BindAction("Teleport", IE_Pressed, this, &ASCharacter::TeleportAbility);
+	
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteraction);
 
 }
