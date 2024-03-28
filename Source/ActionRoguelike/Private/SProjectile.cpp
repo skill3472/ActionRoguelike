@@ -23,6 +23,7 @@ ASProjectile::ASProjectile()
 	movementComp->InitialSpeed = 1000.0f;
 	movementComp->bRotationFollowsVelocity = true;
 	movementComp->bInitialVelocityInLocalSpace = true;
+	movementComp->ProjectileGravityScale = 0.0f;
 }
 
 void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

@@ -24,6 +24,9 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category="Attack")
 	TSubclassOf<AActor> projectileClass;
+
+	UPROPERTY(EditAnywhere, Category="Attack")
+	TSubclassOf<AActor> secondaryProjectileClass;
 	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* springArmComp;
@@ -41,9 +44,10 @@ protected:
 	UAnimMontage* AttackAnim;
 
 	UPROPERTY(EditAnywhere, Category="Attack")
-	float primaryAttackDelay;
+	float attackDelay;
 
 	FTimerHandle TimerHandle_PrimaryAttack;
+	FTimerHandle TimerHandle_SecondaryAttack;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -52,6 +56,8 @@ protected:
 	void MoveRight(float value);
 	void PrimaryAttack();
 	void PrimaryAttack_TimeElapsed();
+	void SecondaryAttack();
+	void SecondaryAttack_TimeElapsed();
 	void Jump();
 	void PrimaryInteraction();
 public:	

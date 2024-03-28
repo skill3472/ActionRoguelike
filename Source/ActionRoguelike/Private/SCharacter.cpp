@@ -73,7 +73,7 @@ void ASCharacter::PrimaryInteraction()
 void ASCharacter::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, primaryAttackDelay);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, attackDelay);
 }
 
 void ASCharacter::PrimaryAttack_TimeElapsed()
@@ -113,6 +113,49 @@ void ASCharacter::PrimaryAttack_TimeElapsed()
 	GetWorld()->SpawnActor<AActor>(projectileClass, spawnTM, spawnParams);
 }
 
+void ASCharacter::SecondaryAttack()
+{
+	PlayAnimMontage(AttackAnim);
+	GetWorldTimerManager().SetTimer(TimerHandle_SecondaryAttack, this, &ASCharacter::SecondaryAttack_TimeElapsed, attackDelay);
+}
+
+void ASCharacter::SecondaryAttack_TimeElapsed()
+{
+	FVector handLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+
+	FHitResult hit;
+	FRotator projectileRotation;
+	APlayerCameraManager *camManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
+	FVector start = camManager->GetCameraLocation();
+	FVector camForward  = camManager->GetCameraRotation().Vector();
+	FVector end = start + (camForward * 15000);
+	FCollisionObjectQueryParams ObjectQueryParams;
+	FCollisionQueryParams QueryParams;
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
+	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
+	
+	bool bHitTarget = GetWorld()->LineTraceSingleByObjectType(hit, start, end, ObjectQueryParams,  QueryParams);
+	FVector hitPoint = hit.ImpactPoint;
+	if(bHitTarget)
+	{
+		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, hitPoint);
+		DrawDebugLine(GetWorld(), start, hit.Location, FColor::Purple, false, 2.0f, 0, 2.0f);
+	}
+	else
+	{
+		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, end);
+		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
+	}
+	
+	FTransform spawnTM = FTransform(projectileRotation, handLocation); // New rotation code here?
+	
+	FActorSpawnParameters spawnParams;
+	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	spawnParams.Instigator = this;
+	
+	GetWorld()->SpawnActor<AActor>(secondaryProjectileClass, spawnTM, spawnParams);
+}
+
 // Called every frame
 void ASCharacter::Tick(float DeltaTime)
 {
@@ -133,6 +176,7 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &ASCharacter::SecondaryAttack);
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteraction);
 
 }
