@@ -2,6 +2,7 @@
 
 
 #include "SExplosiveBarrel.h"
+#include "SAttributeComponent.h"
 
 // Sets default values
 ASExplosiveBarrel::ASExplosiveBarrel()
@@ -34,6 +35,14 @@ void ASExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 	UE_LOG(LogTemp, Log, TEXT("OnActorHit reached (ExplosiveBarrel)"));
 
 	FString CombinedString = FString::Printf(TEXT("Hit at location %s"), *Hit.ImpactPoint.ToString());
+	if(OtherActor)
+	{
+		USAttributeComponent* attributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		if(attributeComp)
+		{
+			attributeComp->ApplyHealthChange(-damage);
+		}
+	}
 	DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
 }
 

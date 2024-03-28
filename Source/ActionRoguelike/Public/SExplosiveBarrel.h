@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Explosion")
 	float ExplosionRadius;
 
+	UPROPERTY(EditAnywhere, Category="Explosion")
+	float damage;
+
 	virtual void PostInitializeComponents() override;
 	
 	UFUNCTION()

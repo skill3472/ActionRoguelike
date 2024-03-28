@@ -3,6 +3,7 @@
 
 #include "ActionRoguelike/Public/SCharacter.h"
 
+#include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -20,6 +21,8 @@ ASCharacter::ASCharacter()
 	
 	cameraComp = CreateDefaultSubobject<UCameraComponent>("cameraComp");
 	cameraComp->SetupAttachment(springArmComp);
+
+	attributeComp = CreateDefaultSubobject<USAttributeComponent>("attributeComp");
 
 	springArmComp->bUsePawnControlRotation  = true;
 	bUseControllerRotationYaw = false;
