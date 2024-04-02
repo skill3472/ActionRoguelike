@@ -149,14 +149,10 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> projectileToSpawn)
 	FVector hitPoint = hit.ImpactPoint;
 	if(bHitTarget)
 	{
-		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, hitPoint);
-		DrawDebugLine(GetWorld(), start, hit.Location, FColor::Purple, false, 2.0f, 0, 2.0f);
+		end = hit.ImpactPoint;
 	}
-	else
-	{
-		projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, end);
-		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
-	}
+	projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, end);
+	DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
 	
 	FTransform spawnTM = FTransform(projectileRotation, handLocation);
 	
