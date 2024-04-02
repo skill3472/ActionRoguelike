@@ -139,7 +139,7 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> projectileToSpawn)
 	APlayerCameraManager *camManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
 	FVector start = camManager->GetCameraLocation();
 	FVector camForward  = camManager->GetCameraRotation().Vector();
-	FVector end = start + (camForward * 15000);
+	FVector end = start + (camForward * 5000);
 	FCollisionObjectQueryParams ObjectQueryParams;
 	FCollisionQueryParams QueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
