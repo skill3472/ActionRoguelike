@@ -24,7 +24,7 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* meshComp;
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 
 };
