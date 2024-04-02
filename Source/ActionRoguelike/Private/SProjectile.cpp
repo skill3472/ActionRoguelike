@@ -4,6 +4,8 @@
 #include "SProjectile.h"
 
 #include "SAttributeComponent.h"
+#include "CADKernel/Utils/StringUtil.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ASProjectile::ASProjectile()
@@ -14,6 +16,7 @@ ASProjectile::ASProjectile()
 	sphereComp = CreateDefaultSubobject<USphereComponent>("sphereComp");
 	sphereComp->SetCollisionProfileName("Projectile");
 	sphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectile::OnActorOverlap);
+	sphereComp->OnComponentHit.AddDynamic(this, &ASProjectile::OnActorHit);
 	RootComponent = sphereComp;
 
 	effectsComp = CreateDefaultSubobject<UParticleSystemComponent>("effectsComp");
@@ -36,6 +39,21 @@ void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			attributeComp->ApplyHealthChange(-damage);
 			Destroy();
 		}
+	}
+}
+
+void ASProjectile::OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	Explode();
+}
+
+void ASProjectile::Explode_Implementation()
+{
+	if(ensure(IsValid(this)))
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, explosionEffect, GetActorLocation(), GetActorRotation());
+		Destroy();
 	}
 }
 

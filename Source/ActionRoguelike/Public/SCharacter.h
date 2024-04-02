@@ -66,6 +66,7 @@ protected:
 	void TeleportAbility_TimeElapsed();
 	void Jump();
 	void PrimaryInteraction();
+	void SpawnProjectile(TSubclassOf<AActor> projectileToSpawn);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

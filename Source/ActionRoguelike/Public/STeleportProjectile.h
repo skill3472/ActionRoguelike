@@ -15,16 +15,12 @@ class ACTIONROGUELIKE_API ASTeleportProjectile : public ASProjectile
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* explosionEffect;
 	
-	virtual void BeginPlay() override;
+	virtual void BeginPlay();
 	FTimerHandle TimerHandle_Explode;
-	FTimerHandle TimerHandle_Teleport;
-	void Explode();
+	virtual void Explode_Implementation() override;
+	virtual void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
 	void Teleport();
-	UFUNCTION()
-	void OnActorHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 public:
 	ASTeleportProjectile();
 };
