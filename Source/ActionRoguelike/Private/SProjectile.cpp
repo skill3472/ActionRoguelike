@@ -27,6 +27,10 @@ ASProjectile::ASProjectile()
 	movementComp->bRotationFollowsVelocity = true;
 	movementComp->bInitialVelocityInLocalSpace = true;
 	movementComp->ProjectileGravityScale = 0.0f;
+
+	audioComp = CreateDefaultSubobject<UAudioComponent>("audioComp");
+	audioComp->SetupAttachment(sphereComp);
+	
 }
 
 void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -36,6 +40,7 @@ void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		USAttributeComponent* attributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if(attributeComp)
 		{
+			UGameplayStatics::PlaySoundAtLocation(this, Cast<USoundBase>(explodeSound), GetActorLocation());
 			attributeComp->ApplyHealthChange(-damage);
 			Destroy();
 		}
@@ -52,6 +57,7 @@ void ASProjectile::Explode_Implementation()
 {
 	if(ensure(IsValid(this)))
 	{
+		UGameplayStatics::PlaySoundAtLocation(this, Cast<USoundBase>(explodeSound), GetActorLocation());
 		UGameplayStatics::SpawnEmitterAtLocation(this, explosionEffect, GetActorLocation(), GetActorRotation());
 		Destroy();
 	}
@@ -61,6 +67,7 @@ void ASProjectile::Explode_Implementation()
 void ASProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+	audioComp->Play();
 }
 
 // Called every frame

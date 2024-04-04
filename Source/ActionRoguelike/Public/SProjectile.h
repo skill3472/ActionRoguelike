@@ -7,6 +7,8 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 #include "SProjectile.generated.h"
 
 UCLASS()
@@ -28,11 +30,17 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UParticleSystemComponent* effectsComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Damage")
 	float damage;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Audio")
+	UAudioComponent* audioComp;
+
+	UPROPERTY(EditAnywhere, Category="VFX")
 	UParticleSystem* explosionEffect;
+
+	UPROPERTY(EditAnywhere, Category="Audio")
+	USoundCue* explodeSound;
 
 	UFUNCTION()
 	virtual void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
