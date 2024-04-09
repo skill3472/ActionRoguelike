@@ -8,6 +8,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -31,6 +32,7 @@ ASCharacter::ASCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	HandSocketName = "Muzzle_01";
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -139,7 +141,8 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void ASCharacter::SpawnProjectile(TSubclassOf<AActor> projectileToSpawn)
 {
-	FVector handLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	FVector handLocation = GetMesh()->GetSocketLocation(HandSocketName);
+	UGameplayStatics::SpawnEmitterAttached(muzzleFlash, GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
 
 	FHitResult hit;
 	FRotator projectileRotation;

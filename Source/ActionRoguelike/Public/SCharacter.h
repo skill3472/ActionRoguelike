@@ -49,6 +49,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Attack")
 	float attackDelay;
 
+	UPROPERTY(EditAnywhere, Category="Attack")
+	UParticleSystem* muzzleFlash;
+	
+	UPROPERTY(VisibleAnywhere, Category="Attack")
+	FName HandSocketName;
+	
 	FTimerHandle TimerHandle_PrimaryAttack;
 	FTimerHandle TimerHandle_SecondaryAttack;
 	FTimerHandle TimerHandle_TeleportAbility;
