@@ -173,6 +173,10 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> projectileToSpawn)
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
+	if(Delta < 0.0f)
+	{
+		GetMesh()->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	}
 	if(NewHealth <= 0.0f && Delta < 0.0f)
 	{
 		APlayerController* pc = Cast<APlayerController>(GetController());
