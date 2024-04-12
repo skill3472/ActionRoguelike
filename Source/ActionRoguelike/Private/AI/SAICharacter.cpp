@@ -13,6 +13,7 @@ ASAICharacter::ASAICharacter()
 {
  	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("pawnSensingComp");
 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void ASAICharacter::PostInitializeComponents()
