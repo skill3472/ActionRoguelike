@@ -10,9 +10,6 @@
 // Sets default values
 ASProjectile::ASProjectile()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
-
 	sphereComp = CreateDefaultSubobject<USphereComponent>("sphereComp");
 	sphereComp->SetCollisionProfileName("Projectile");
 	sphereComp->OnComponentBeginOverlap.AddDynamic(this, &ASProjectile::OnActorOverlap);
@@ -33,6 +30,12 @@ ASProjectile::ASProjectile()
 	
 }
 
+void ASProjectile::PostInitializeComponents()
+{
+	sphereComp->IgnoreActorWhenMoving(GetInstigator(), true);
+	Super::PostInitializeComponents();
+}
+
 void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(OtherActor && OtherActor != GetInstigator())
@@ -41,7 +44,7 @@ void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 		if(attributeComp)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, Cast<USoundBase>(explodeSound), GetActorLocation());
-			attributeComp->ApplyHealthChange(-damage);
+			attributeComp->ApplyHealthChange(GetInstigator(), -damage);
 			Destroy();
 		}
 	}
@@ -68,11 +71,5 @@ void ASProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 	audioComp->Play();
-}
-
-// Called every frame
-void ASProjectile::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 

@@ -14,7 +14,7 @@ void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
 	USAttributeComponent* attributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
 	if(attributeComp)
 	{
-		if(attributeComp->ApplyHealthChange(healAmount) && bIsEnabled)
+		if(attributeComp->ApplyHealthChange(this, healAmount) && bIsEnabled)
 		{
 			bIsEnabled = false;
 			SetActorEnableCollision(bIsEnabled);

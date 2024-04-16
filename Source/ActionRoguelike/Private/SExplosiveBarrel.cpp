@@ -40,7 +40,7 @@ void ASExplosiveBarrel::OnActorHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 		USAttributeComponent* attributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
 		if(attributeComp)
 		{
-			attributeComp->ApplyHealthChange(-damage);
+			attributeComp->ApplyHealthChange(this, -damage);
 		}
 	}
 	DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);

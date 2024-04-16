@@ -54,6 +54,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere, Category="Attack")
 	FName HandSocketName;
+
+	UPROPERTY(VisibleAnywhere, Category="Effects")
+	FName TimeToHitParamName;
 	
 	FTimerHandle TimerHandle_PrimaryAttack;
 	FTimerHandle TimerHandle_SecondaryAttack;
