@@ -38,6 +38,11 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
 	float Delta)
 {
+	if(AAIController* AIC = Cast<AAIController>(GetController()))
+	{
+		bool bIsLow = USAttributeComponent::GetAttributes(this)->IsLowHealth();
+		AIC->GetBlackboardComponent()->SetValueAsBool("IsLowHealth", bIsLow);
+	}
 	if(Delta < 0.0f)
 	{
 		// If damaged
@@ -45,7 +50,7 @@ void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponen
 		{
 			SetTargetActor(InstigatorActor);
 		}
-
+		
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 
 		if(NewHealth <= 0.0f)

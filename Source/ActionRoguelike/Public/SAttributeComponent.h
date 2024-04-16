@@ -32,12 +32,21 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
 	float maxHealth;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Attributes")
+	float LowHealthThreshold;
+
 public:
 	UFUNCTION(BlueprintCallable)
-	const bool isAlive();
+	bool isAlive();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsLowHealth();
 	
 	UFUNCTION(BlueprintCallable)
 	bool ApplyHealthChange(AActor* InstigatorActor, float delta);
+
+	UFUNCTION(BlueprintCallable)
+	void SetHealth(float NewHealth);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;

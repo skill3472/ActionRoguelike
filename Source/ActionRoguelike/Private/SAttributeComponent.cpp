@@ -8,13 +8,19 @@ USAttributeComponent::USAttributeComponent()
 {
 	maxHealth = 100;
 	Health = maxHealth;
+	LowHealthThreshold = 50.0f;
 }
 
 
-const bool USAttributeComponent::isAlive()
+bool USAttributeComponent::isAlive()
 {
 	return Health > 0;
 	
+}
+
+bool USAttributeComponent::IsLowHealth()
+{
+	return Health <= LowHealthThreshold;
 }
 
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delta)
@@ -27,6 +33,11 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delt
 	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 	
 	return ActualDelta != 0;
+}
+
+void USAttributeComponent::SetHealth(float NewHealth)
+{
+	Health = FMath::Clamp(NewHealth, 0.0f, maxHealth);
 }
 
 float USAttributeComponent::GetHealthMax()
