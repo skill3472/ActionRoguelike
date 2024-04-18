@@ -190,4 +190,11 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	}
 }
 
+/*
+*	Cheats
+*/
+void ASCharacter::HealSelf(float Amount /* = 100 */)
+{
+	attributeComp->ApplyHealthChange(this, Amount);
+}
 
