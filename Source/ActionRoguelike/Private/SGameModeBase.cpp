@@ -5,8 +5,13 @@
 
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
+#include "SCharacter.h"
 
 
+static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via a timer."), ECVF_Cheat);
+static TAutoConsoleVariable<float> CVarBotMaxMultiplier(TEXT("su.BotMultiplier"), 1.0f, TEXT("Change the max bots alive multiplier"), ECVF_Cheat);
+
+// ReSharper disable once CppPossiblyUninitializedMember
 ASGameModeBase::ASGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
@@ -21,6 +26,12 @@ void ASGameModeBase::StartPlay()
 
 void ASGameModeBase::SpawnBots_TimeElapsed()
 {
+	if(!CVarSpawnBots.GetValueOnGameThread())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Bot tried to spawn, but disabled via CVarSpawnBots = false."))
+		return;
+	}
+	
 	int32 NrOfAliveBots = 0;
 	for(TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
 	{
@@ -40,6 +51,8 @@ void ASGameModeBase::SpawnBots_TimeElapsed()
 	{
 		MaxBotCount = DifficultyCurve->GetFloatValue(GetWorld()->TimeSeconds);
 	}
+
+	MaxBotCount *= CVarSpawnBots.GetValueOnGameThread();
 	
 	if(NrOfAliveBots >= MaxBotCount)
 	{
@@ -79,5 +92,30 @@ void ASGameModeBase::KillAll()
 		{
 			AttributeComp->Kill(this); // @fixme: pass in player for kill credit maybe?
 		}
+	}
+}
+
+void ASGameModeBase::OnActorKilled(AActor* Victim, AActor* Killer)
+{
+	ASCharacter* Player = Cast<ASCharacter>(Victim);
+	if(Player)
+	{
+		FTimerHandle TimerHandle_RespawnDelay;
+		FTimerDelegate Delegate;
+		Delegate.BindUFunction(this, "RespawnPlayer_TimeElapsed", Player->GetController());
+
+		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s Killer: %s"), *GetNameSafe(Victim), *GetNameSafe(Killer));
+}
+
+void ASGameModeBase::RespawnPlayer_TimeElapsed(AController* Controller)
+{
+	if(ensure(Controller))
+	{
+		Controller->UnPossess();
+		
+		RestartPlayer(Controller);
 	}
 }

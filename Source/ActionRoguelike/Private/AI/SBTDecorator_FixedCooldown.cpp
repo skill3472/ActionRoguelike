@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SBTDecorator_FixedCooldown.h"
+#include "AI/SBTDecorator_FixedCooldown.h"
 
 void USBTDecorator_FixedCooldown::InitializeMemory(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory,
 	EBTMemoryInit::Type InitType) const

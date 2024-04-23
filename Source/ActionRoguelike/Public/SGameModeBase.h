@@ -24,6 +24,11 @@ public:
 	ASGameModeBase();
 
 	virtual void StartPlay() override;
+
+	UFUNCTION(Exec)
+	void KillAll();
+
+	virtual void OnActorKilled(AActor* Victim, AActor* Killer);
 	
 protected:
 	FTimerHandle TimerHandle_SpawnBots;
@@ -40,12 +45,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	UCurveFloat* DifficultyCurve;
 
+	UPROPERTY(EditDefaultsOnly, Category="Player")
+	float RespawnDelay;
+
+	UFUNCTION()
+	void RespawnPlayer_TimeElapsed(AController* Controller);
+
 	UFUNCTION()
 	void SpawnBots_TimeElapsed();
 
 	UFUNCTION()
 	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
-
-	UFUNCTION(Exec)
-	void KillAll();
 };

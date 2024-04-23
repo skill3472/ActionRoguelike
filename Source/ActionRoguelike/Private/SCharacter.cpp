@@ -6,10 +6,13 @@
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+
+static TAutoConsoleVariable<bool> CVarDebugDrawAim(TEXT("su.AimDebugDraw"), false, TEXT("Enable Debug Lines for Attack Aiming"), ECVF_Cheat);
 
 // Sets default values
 ASCharacter::ASCharacter()
@@ -41,6 +44,11 @@ void ASCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	attributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+}
+
+FVector ASCharacter::GetPawnViewLocation() const
+{
+	return cameraComp->GetComponentLocation();
 }
 
 // Called when the game starts or when spawned
@@ -165,7 +173,8 @@ void ASCharacter::SpawnProjectile(TSubclassOf<AActor> projectileToSpawn)
 		end = hit.ImpactPoint;
 	}
 	projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, end);
-	DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
+	if(CVarDebugDrawAim.GetValueOnGameThread())
+		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
 	
 	FTransform spawnTM = FTransform(projectileRotation, handLocation);
 	
@@ -183,10 +192,12 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 	{
 		GetMesh()->SetScalarParameterValueOnMaterials(TimeToHitParamName, GetWorld()->TimeSeconds);
 	}
-	if(NewHealth <= 0.0f && Delta < 0.0f)
+	if(NewHealth <= 0.0f && Delta < 0.0f) // Died
 	{
 		APlayerController* pc = Cast<APlayerController>(GetController());
 		DisableInput(pc);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		GetCharacterMovement()->DisableMovement();
 	}
 }
 

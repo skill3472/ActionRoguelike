@@ -3,6 +3,8 @@
 
 #include "SMagicProjectile.h"
 
+#include "SGameplayFunctionLibrary.h"
+
 // Sets default values
 ASMagicProjectile::ASMagicProjectile()
 {
@@ -19,10 +21,15 @@ void ASMagicProjectile::BeginPlay()
 	
 }
 
-// Called every frame
-void ASMagicProjectile::Tick(float DeltaTime)
+void ASMagicProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
-
+	if(OtherActor && OtherActor != GetInstigator())
+	{
+		if(USGameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(), OtherActor, damage, SweepResult))
+		{
+			Explode();
+		}
+	}
 }
 
