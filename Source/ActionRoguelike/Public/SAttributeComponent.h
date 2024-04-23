@@ -49,7 +49,7 @@ public:
 	bool ApplyHealthChange(AActor* InstigatorActor, float delta);
 
 	UFUNCTION(BlueprintCallable)
-	void SetHealth(float NewHealth);
+	void SetHealth(AActor* InstigatorActor, float delta);
 
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;

@@ -43,9 +43,17 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delt
 	return ActualDelta != 0;
 }
 
-void USAttributeComponent::SetHealth(float NewHealth)
+void USAttributeComponent::SetHealth(AActor* InstigatorActor, float NewHealth)
 {
+	if(!GetOwner()->CanBeDamaged())
+		return;
+
+	float oldHealth = Health;
+	
 	Health = FMath::Clamp(NewHealth, 0.0f, maxHealth);
+
+	float ActualDelta = Health - oldHealth;
+	OnHealthChanged.Broadcast(InstigatorActor, this, Health, ActualDelta);
 }
 
 float USAttributeComponent::GetHealthMax()

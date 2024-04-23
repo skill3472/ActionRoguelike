@@ -19,7 +19,7 @@ EBTNodeResult::Type USBTTask_HealAfterHiding::ExecuteTask(UBehaviorTreeComponent
 		USAttributeComponent* MyAttributes = USAttributeComponent::GetAttributes(MyPawn);
 		if(ensure(MyAttributes))
 		{
-			MyAttributes->SetHealth(MyAttributes->GetHealthMax());
+			MyAttributes->SetHealth(MyPawn, MyAttributes->GetHealthMax());
 			return EBTNodeResult::Succeeded;
 		}
 	}
