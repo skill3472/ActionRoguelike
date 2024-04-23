@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "SCharacter.generated.h"
 
+class USActionComponent;
 class UCameraComponent;
 class USpringArmComponent;
 class USInteractionComponent;
@@ -22,15 +23,6 @@ public:
 	ASCharacter();
 
 protected:
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> projectileClass;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	TSubclassOf<AActor> secondaryProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category="Abilities")
-	TSubclassOf<AActor> teleportProjectileClass;
-	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* springArmComp;
 
@@ -43,39 +35,24 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	USAttributeComponent* attributeComp;
 
-	UPROPERTY(EditAnywhere, Category="Attack")
-	UAnimMontage* AttackAnim;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	float attackDelay;
-
-	UPROPERTY(EditAnywhere, Category="Attack")
-	UParticleSystem* muzzleFlash;
-	
-	UPROPERTY(VisibleAnywhere, Category="Attack")
-	FName HandSocketName;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	USActionComponent* ActionComp;
 
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName TimeToHitParamName;
-	
-	FTimerHandle TimerHandle_PrimaryAttack;
-	FTimerHandle TimerHandle_SecondaryAttack;
-	FTimerHandle TimerHandle_TeleportAbility;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void MoveForward(float value);
 	void MoveRight(float value);
+	void SprintStart();
+	void SprintStop();
 	void PrimaryAttack();
-	void PrimaryAttack_TimeElapsed();
 	void SecondaryAttack();
-	void SecondaryAttack_TimeElapsed();
-	void TeleportAbility();
-	void TeleportAbility_TimeElapsed();
+	void Dash();
 	void Jump();
 	void PrimaryInteraction();
-	void SpawnProjectile(TSubclassOf<AActor> projectileToSpawn);
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
 	virtual void PostInitializeComponents() override;

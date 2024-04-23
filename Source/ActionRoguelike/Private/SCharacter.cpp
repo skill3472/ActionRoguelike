@@ -3,6 +3,7 @@
 
 #include "ActionRoguelike/Public/SCharacter.h"
 
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
 #include "SPlayerState.h"
@@ -29,15 +30,14 @@ ASCharacter::ASCharacter()
 
 	attributeComp = CreateDefaultSubobject<USAttributeComponent>("attributeComp");
 
+	ActionComp = CreateDefaultSubobject<USActionComponent>("actionComp");
+
 	springArmComp->bUsePawnControlRotation  = true;
 	bUseControllerRotationYaw = false;
 
 	interactionComp = CreateDefaultSubobject<USInteractionComponent>("interactionComp");
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
-
-	HandSocketName = "Muzzle_01";
-	TimeToHitParamName = "TimeToHit";
 }
 
 void ASCharacter::PostInitializeComponents()
@@ -79,6 +79,16 @@ void ASCharacter::MoveRight(float value)
 	AddMovementInput(RightVector, value);
 }
 
+void ASCharacter::SprintStart()
+{
+	ActionComp->StartActionByName(this, "Sprint");
+}
+
+void ASCharacter::SprintStop()
+{
+	ActionComp->StopActionByName(this, "Sprint");
+}
+
 void ASCharacter::Jump()
 {
 	Super::Jump();
@@ -91,35 +101,17 @@ void ASCharacter::PrimaryInteraction()
 
 void ASCharacter::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &ASCharacter::PrimaryAttack_TimeElapsed, attackDelay);
-}
-
-void ASCharacter::PrimaryAttack_TimeElapsed()
-{
-	SpawnProjectile(projectileClass);
+	ActionComp->StartActionByName(this, "PrimaryAttack");
 }
 
 void ASCharacter::SecondaryAttack()
 {
-	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(TimerHandle_SecondaryAttack, this, &ASCharacter::SecondaryAttack_TimeElapsed, attackDelay);
+	ActionComp->StartActionByName(this, "SecondaryAttack");
 }
 
-void ASCharacter::SecondaryAttack_TimeElapsed()
+void ASCharacter::Dash()
 {
-	SpawnProjectile(secondaryProjectileClass);
-}
-
-void ASCharacter::TeleportAbility()
-{
-	PlayAnimMontage(AttackAnim);
-	GetWorldTimerManager().SetTimer(TimerHandle_TeleportAbility, this, &ASCharacter::TeleportAbility_TimeElapsed, attackDelay);
-}
-
-void ASCharacter::TeleportAbility_TimeElapsed()
-{
-	SpawnProjectile(teleportProjectileClass);
+	ActionComp->StartActionByName(this, "Dash");
 }
 
 // Called every frame
@@ -137,53 +129,18 @@ void ASCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveForward", this, &ASCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ASCharacter::MoveRight);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ASCharacter::Jump);
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ASCharacter::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ASCharacter::SprintStop);
 	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &ASCharacter::PrimaryAttack);
 	PlayerInputComponent->BindAction("SecondaryAttack", IE_Pressed, this, &ASCharacter::SecondaryAttack);
-	PlayerInputComponent->BindAction("Teleport", IE_Pressed, this, &ASCharacter::TeleportAbility);
+	PlayerInputComponent->BindAction("Teleport", IE_Pressed, this, &ASCharacter::Dash);
 	
 	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &ASCharacter::PrimaryInteraction);
 
-}
-
-void ASCharacter::SpawnProjectile(TSubclassOf<AActor> projectileToSpawn)
-{
-	FVector handLocation = GetMesh()->GetSocketLocation(HandSocketName);
-	UGameplayStatics::SpawnEmitterAttached(muzzleFlash, GetMesh(), HandSocketName, FVector::ZeroVector, FRotator::ZeroRotator, EAttachLocation::SnapToTarget);
-
-	FHitResult hit;
-	FRotator projectileRotation;
-	APlayerCameraManager *camManager = GetWorld()->GetFirstPlayerController()->PlayerCameraManager;
-	FVector start = camManager->GetCameraLocation();
-	FVector camForward  = camManager->GetCameraRotation().Vector();
-	FVector end = start + (camForward * 5000);
-	FCollisionObjectQueryParams ObjectQueryParams;
-	FCollisionQueryParams QueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldStatic);
-	ObjectQueryParams.AddObjectTypesToQuery(ECC_Pawn);
-	QueryParams.AddIgnoredActor(this);
-	
-	bool bHitTarget = GetWorld()->LineTraceSingleByObjectType(hit, start, end, ObjectQueryParams,  QueryParams);
-	FVector hitPoint = hit.ImpactPoint;
-	if(bHitTarget)
-	{
-		end = hit.ImpactPoint;
-	}
-	projectileRotation = UKismetMathLibrary::FindLookAtRotation(handLocation, end);
-	if(CVarDebugDrawAim.GetValueOnGameThread())
-		DrawDebugLine(GetWorld(), start, end, FColor::Purple, false, 2.0f, 0, 2.0f);
-	
-	FTransform spawnTM = FTransform(projectileRotation, handLocation);
-	
-	FActorSpawnParameters spawnParams;
-	spawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	spawnParams.Instigator = this;
-	
-	GetWorld()->SpawnActor<AActor>(projectileToSpawn, spawnTM, spawnParams);
 }
 
 void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
