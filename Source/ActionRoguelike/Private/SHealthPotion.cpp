@@ -9,32 +9,16 @@ ASHealthPotion::ASHealthPotion()
  	healAmount = 30;
 }
 
-void ASHealthPotion::Interact_Implementation(APawn* InstigatorPawn)
+bool ASHealthPotion::ApplyBuff(APawn* InstigatorPawn)
 {
 	USAttributeComponent* attributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
 	if(attributeComp)
 	{
-		if(attributeComp->ApplyHealthChange(this, healAmount) && bIsEnabled)
+		if(attributeComp->ApplyHealthChange(this, healAmount))
 		{
-			bIsEnabled = false;
-			SetActorEnableCollision(bIsEnabled);
-			RootComponent->SetVisibility(bIsEnabled, true);
-			GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASHealthPotion::Cooldown_TimeElapsed, cooldown);
+			return true;
 		}
 	}
-}
-
-// Called when the game starts or when spawned
-void ASHealthPotion::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ASHealthPotion::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
+	return false;
 }
 

@@ -89,4 +89,7 @@ public:
 
 	UFUNCTION(Exec)
 	void HealSelf(float Amount = 100.0f);
+
+	UFUNCTION(Exec)
+	void GiveCredits(int Delta = 1000);
 };

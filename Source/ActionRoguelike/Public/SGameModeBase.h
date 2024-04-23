@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "SBuffItem.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"
 #include "GameFramework/GameModeBase.h"
@@ -48,6 +49,18 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category="Player")
 	float RespawnDelay;
 
+	UPROPERTY(EditDefaultsOnly, Category="Player")
+	int CreditsFromBotKill;
+
+	UPROPERTY(EditDefaultsOnly, Category="Buffs")
+	UEnvQuery* SpawnBuffsQuery;
+
+	UPROPERTY(EditDefaultsOnly, Category="Buffs")
+	TArray<TSubclassOf<AActor>> BuffItems;
+
+	UPROPERTY(EditDefaultsOnly, Category="Buffs")
+	int AmountOfBuffsToSpawn;
+
 	UFUNCTION()
 	void RespawnPlayer_TimeElapsed(AController* Controller);
 
@@ -56,4 +69,10 @@ protected:
 
 	UFUNCTION()
 	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	UFUNCTION()
+	void SpawnBuffs();
+
+	UFUNCTION()
+	void OnBuffsQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 };

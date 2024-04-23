@@ -5,6 +5,7 @@
 
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
+#include "SPlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -207,5 +208,10 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 void ASCharacter::HealSelf(float Amount /* = 100 */)
 {
 	attributeComp->ApplyHealthChange(this, Amount);
+}
+
+void ASCharacter::GiveCredits(int Delta /* = 1000 */)
+{
+	GetPlayerState<ASPlayerState>()->ApplyCreditsChange(Delta);
 }
 

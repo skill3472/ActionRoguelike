@@ -6,21 +6,26 @@
 #include "EngineUtils.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
+#include "SPlayerState.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("su.SpawnBots"), true, TEXT("Enable spawning of bots via a timer."), ECVF_Cheat);
 static TAutoConsoleVariable<float> CVarBotMaxMultiplier(TEXT("su.BotMultiplier"), 1.0f, TEXT("Change the max bots alive multiplier"), ECVF_Cheat);
+static TAutoConsoleVariable<bool> CVarDrawBotSpawnPoint(TEXT("su.DrawBotSpawn"), false, TEXT("Change if you want to see debug spheres at locations that bots spawned at."), ECVF_Cheat);
 
 // ReSharper disable once CppPossiblyUninitializedMember
 ASGameModeBase::ASGameModeBase()
 {
 	SpawnTimerInterval = 2.0f;
+	CreditsFromBotKill = 25;
+	AmountOfBuffsToSpawn = 5;
 }
 
 void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
+	SpawnBuffs();
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBots_TimeElapsed, SpawnTimerInterval, true);
 }
 
@@ -69,7 +74,7 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 {
 	if(QueryStatus != EEnvQueryStatus::Success)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Spawn bot EQS Query Failed!"));
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Bots EQS Query Failed!"));
 		return;
 	}
 	
@@ -77,7 +82,36 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 	if(Locations.IsValidIndex(0))
 	{
 		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
-		DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.0f);
+		if(CVarDrawBotSpawnPoint.GetValueOnGameThread())
+			DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.0f);
+	}
+}
+
+void ASGameModeBase::SpawnBuffs()
+{
+	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBuffsQuery, this, EEnvQueryRunMode::AllMatching, nullptr);
+	if(ensure(QueryInstance))
+		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnBuffsQueryCompleted);
+}
+
+void ASGameModeBase::OnBuffsQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
+	EEnvQueryStatus::Type QueryStatus)
+{
+	if(QueryStatus != EEnvQueryStatus::Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Buffs EQS Query Failed!"));
+		return;
+	}
+	TArray<FVector> AllLocations = QueryInstance->GetResultsAsLocations();
+	TArray<FVector> Locations;
+	for(int i = 0; i < AmountOfBuffsToSpawn; i++)
+	{
+		Locations.Add(AllLocations[FMath::RandRange(0, AllLocations.Num()-1)]);
+	}
+	for (FVector Location : Locations)
+	{
+		TSubclassOf<AActor> BuffItem = BuffItems[FMath::RandRange(0, BuffItems.Num()-1)];
+		GetWorld()->SpawnActor<AActor>(BuffItem, Location, FRotator::ZeroRotator);
 	}
 }
 
@@ -106,7 +140,17 @@ void ASGameModeBase::OnActorKilled(AActor* Victim, AActor* Killer)
 
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, RespawnDelay, false);
 	}
-
+	ASAICharacter* Bot = Cast<ASAICharacter>(Victim);
+	if(Bot)
+	{
+		ASCharacter* PlayerKiller = Cast<ASCharacter>(Killer);
+		ASPlayerState* PlayerState = Cast<ASPlayerState>(PlayerKiller->GetPlayerState());
+		if(ensure(PlayerState))
+		{
+			PlayerState->ApplyCreditsChange(CreditsFromBotKill);
+		}
+	}
+	
 	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s Killer: %s"), *GetNameSafe(Victim), *GetNameSafe(Killer));
 }
 

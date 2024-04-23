@@ -17,19 +17,11 @@ class ACTIONROGUELIKE_API ASHealthPotion : public ASBuffItem
 public:	
 	// Sets default values for this actor's properties
 	ASHealthPotion();
-	void Interact_Implementation(APawn* InstigatorPawn) override;
 
 protected:
+	bool ApplyBuff(APawn* InstigatorPawn) override;
 
 	UPROPERTY(EditAnywhere, Category="Stats")
 	float healAmount;
-	
-	
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
 
 };

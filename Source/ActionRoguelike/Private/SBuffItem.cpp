@@ -11,18 +11,28 @@ ASBuffItem::ASBuffItem()
 
 	MeshComp = CreateDefaultSubobject<UStaticMeshComponent>("MeshComp");
 	RootComponent = MeshComp;
+
+	CreditsPrice = 0;
+	cooldown = 10.0f;
 	
 	bIsEnabled = true;
 }
 
 void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	if(InstigatorPawn && bIsEnabled)
+	ASPlayerState* PlayerState = Cast<ASCharacter>(InstigatorPawn)->GetPlayerState<ASPlayerState>();
+	if(InstigatorPawn && bIsEnabled && PlayerState->HasCredits(CreditsPrice))
 	{
-		bIsEnabled = false;
-		SetActorEnableCollision(bIsEnabled);
-		RootComponent->SetVisibility(bIsEnabled, true);
-		GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASBuffItem::Cooldown_TimeElapsed, cooldown);
+		if(ApplyBuff(InstigatorPawn))
+		{
+			PlayerState->ApplyCreditsChange(-CreditsPrice);
+			bIsEnabled = false;
+			SetActorEnableCollision(bIsEnabled);
+			RootComponent->SetVisibility(bIsEnabled, true);
+
+			FTimerHandle TimerHandle_BuffCooldown;
+			GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASBuffItem::Cooldown_TimeElapsed, cooldown);
+		}
 	}
 }
 
@@ -31,6 +41,11 @@ void ASBuffItem::Cooldown_TimeElapsed()
 	bIsEnabled = true;
 	SetActorEnableCollision(bIsEnabled);
 	RootComponent->SetVisibility(bIsEnabled, true);
+}
+
+bool ASBuffItem::ApplyBuff(APawn* InstigatorPawn)
+{
+	return false;
 }
 
 // Called when the game starts or when spawned
