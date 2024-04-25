@@ -8,6 +8,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SWorldUserWidget.h"
 #include "Blueprint/UserWidget.h"
@@ -18,7 +19,8 @@
 ASAICharacter::ASAICharacter()
 {
  	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>("pawnSensingComp");
-	attributeComp = CreateDefaultSubobject<USAttributeComponent>("attributeComp");
+	AttributeComp = CreateDefaultSubobject<USAttributeComponent>("attributeComp");
+	ActionComp = CreateDefaultSubobject<USActionComponent>("actionComp");
 	
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -33,7 +35,7 @@ void ASAICharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 	
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
-	attributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
+	AttributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
 }
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)

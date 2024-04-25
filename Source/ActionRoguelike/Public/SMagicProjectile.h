@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "SProjectile.h"
 #include "GameFramework/Actor.h"
 #include "SMagicProjectile.generated.h"
@@ -24,5 +25,7 @@ protected:
 	virtual void BeginPlay() override;
 	
 	void OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult) override;
-
+	
+	UPROPERTY(EditDefaultsOnly, Category="Tags")
+	FGameplayTag ParryTag;
 };
