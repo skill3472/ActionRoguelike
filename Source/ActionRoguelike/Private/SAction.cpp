@@ -40,6 +40,11 @@ bool USAction::CanStart_Implementation(AActor* Instigator)
 	return true;
 }
 
+USAction::USAction()
+{
+	bAutoStart = false;
+}
+
 UWorld* USAction::GetWorld() const
 {
 	UActorComponent* Comp = Cast<UActorComponent>(GetOuter());

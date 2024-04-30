@@ -20,7 +20,8 @@ class ACTIONROGUELIKE_API USAction : public UObject
 
 
 public:
-
+	USAction();
+	
 	UFUNCTION(BlueprintNativeEvent, Category = "Action")	
 	void StartAction(AActor* Instigator);
 
@@ -35,7 +36,12 @@ public:
 
 	UWorld* GetWorld() const override;
 
+	UFUNCTION(BlueprintCallable, Category="Action")
 	bool IsRunning() const;
+
+	/* Starts automatically when added to the action component. */
+	UPROPERTY(EditDefaultsOnly, Category="Action")
+	bool bAutoStart;
 
 protected:
 	// Tags added to owner actor when actions starts, removed when action stopped

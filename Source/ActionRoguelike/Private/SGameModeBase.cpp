@@ -121,10 +121,12 @@ void ASGameModeBase::KillAll()
 	for(TActorIterator<ASAICharacter> It(GetWorld()); It; ++It)
 	{
 		ASAICharacter* Bot = *It;
-		USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot);
-		if(ensure(AttributeComp) && AttributeComp->isAlive())
+		if(USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(Bot))
 		{
-			AttributeComp->Kill(this); // @fixme: pass in player for kill credit maybe?
+			if(ensure(AttributeComp) && AttributeComp->isAlive())
+			{
+				AttributeComp->Kill(this); // @fixme: pass in player for kill credit maybe?
+			}
 		}
 	}
 }
