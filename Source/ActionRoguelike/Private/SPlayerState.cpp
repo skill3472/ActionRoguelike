@@ -21,7 +21,7 @@ bool ASPlayerState::HasCredits(int Amount)
 		return true;
 }
 
-int ASPlayerState::GetCredits()
+int32 ASPlayerState::GetCredits()
 {
 	return PlayerCredits;
 }

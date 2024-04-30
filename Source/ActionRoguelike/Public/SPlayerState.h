@@ -18,7 +18,7 @@ class ACTIONROGUELIKE_API ASPlayerState : public APlayerState
 
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Credits")
-	int PlayerCredits;
+	int32 PlayerCredits;
 
 
 public:
@@ -29,7 +29,7 @@ public:
 	bool HasCredits(int Amount);
 
 	UFUNCTION(BlueprintCallable, Category="Credits")
-	int GetCredits();
+	int32 GetCredits();
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnCreditsChanged OnCreditsChanged;
