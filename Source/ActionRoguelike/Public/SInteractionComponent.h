@@ -21,6 +21,9 @@ public:
 protected:
 	UPROPERTY()
 	AActor* FocusedActor;
+
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* InFocus);
 	
 	void FindBestInteractable();	
 
