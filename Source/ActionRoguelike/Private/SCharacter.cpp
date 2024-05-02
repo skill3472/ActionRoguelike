@@ -29,6 +29,7 @@ ASCharacter::ASCharacter()
 	cameraComp->SetupAttachment(springArmComp);
 
 	attributeComp = CreateDefaultSubobject<USAttributeComponent>("attributeComp");
+	attributeComp->UseRage(true);
 
 	ActionComp = CreateDefaultSubobject<USActionComponent>("actionComp");
 

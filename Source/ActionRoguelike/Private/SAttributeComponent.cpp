@@ -13,6 +13,11 @@ USAttributeComponent::USAttributeComponent()
 	maxHealth = 100;
 	Health = maxHealth;
 	LowHealthThreshold = 50.0f;
+	MaxRage = 100.0f;
+	Rage = 0.0f;
+	DamageToRageMultiplier = 5.0f;
+
+	bUsesRage = false;
 }
 
 
@@ -42,6 +47,8 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delt
 		float DamageMultiplier = CVarDamageMultiplier.GetValueOnGameThread();
 
 		delta *= DamageMultiplier;
+
+		ApplyRageChange(InstigatorActor, (-delta)*DamageToRageMultiplier);
 	}
 	
 	float oldHealth = Health;
@@ -62,6 +69,22 @@ bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delt
 	}
 	
 	return ActualDelta != 0;
+}
+
+bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
+{
+	if(InstigatorActor == GetOwner() && Delta > 0.0f)
+		return false;
+	if(bUsesRage)
+	{
+		float OldRage = Rage;
+		Rage = FMath::Clamp(Rage + Delta, 0.0f, MaxRage);
+		float ActualDelta = Rage - OldRage;
+		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+		
+		return ActualDelta != 0;
+	}
+	return false;
 }
 
 float USAttributeComponent::GetHealthMax()
@@ -87,3 +110,19 @@ bool USAttributeComponent::IsActorAlive(AActor* Actor)
 	}
 	return false;
 }
+
+void USAttributeComponent::UseRage(bool UseRage)
+{
+	bUsesRage = UseRage;
+}
+
+bool USAttributeComponent::UsesRage()
+{
+	return bUsesRage;
+}
+
+float USAttributeComponent::GetRage()
+{
+	return Rage;
+}
+

@@ -10,7 +10,7 @@ USActionEffect::USActionEffect()
 	bAutoStart = true;
 }
 
-void USActionEffect::StartAction_Implementation_Implementation(AActor* Instigator)
+void USActionEffect::StartAction_Implementation(AActor* Instigator)
 {
 	Super::StartAction_Implementation(Instigator);
 
@@ -31,7 +31,7 @@ void USActionEffect::StartAction_Implementation_Implementation(AActor* Instigato
 	}
 }
 
-void USActionEffect::StopAction_Implementation_Implementation(AActor* Instigator)
+void USActionEffect::StopAction_Implementation(AActor* Instigator)
 {
 	if(GetWorld()->GetTimerManager().GetTimerRemaining(TimerHandle_Period) < KINDA_SMALL_NUMBER)
 	{

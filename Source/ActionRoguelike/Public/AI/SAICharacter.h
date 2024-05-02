@@ -39,6 +39,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="UI")
 	TSubclassOf<UUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category="UI")
+	TSubclassOf<UUserWidget> PlayerSeenWidgetClass;
 	
 	UPROPERTY()
 	USWorldUserWidget* ActiveHealthBar;

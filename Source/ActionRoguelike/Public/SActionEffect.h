@@ -17,10 +17,8 @@ class ACTIONROGUELIKE_API USActionEffect : public USAction
 public:
 	USActionEffect();
 	
-	UFUNCTION(BlueprintNativeEvent, Category = "Action")	
 	void StartAction_Implementation(AActor* Instigator) override;
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Action")	
+	
 	void StopAction_Implementation(AActor* Instigator) override;
 
 	
