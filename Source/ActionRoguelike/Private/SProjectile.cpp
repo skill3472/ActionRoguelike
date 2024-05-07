@@ -27,7 +27,8 @@ ASProjectile::ASProjectile()
 
 	audioComp = CreateDefaultSubobject<UAudioComponent>("audioComp");
 	audioComp->SetupAttachment(sphereComp);
-	
+
+	//SetReplicates(true);
 }
 
 void ASProjectile::PostInitializeComponents()

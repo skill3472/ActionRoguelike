@@ -16,6 +16,8 @@ ASBuffItem::ASBuffItem()
 	cooldown = 10.0f;
 	
 	bIsEnabled = true;
+
+	SetReplicates(true);
 }
 
 void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)

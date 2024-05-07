@@ -27,10 +27,10 @@ public:
 	USAttributeComponent();
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Health")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Health")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Health")
 	float maxHealth;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Health")
@@ -48,6 +48,11 @@ protected:
 	/* Amount to multiply the damage by, to get the Rage value to add. */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Rage")
 	float DamageToRageMultiplier;
+
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
 
 public:
 	UFUNCTION(BlueprintCallable)
