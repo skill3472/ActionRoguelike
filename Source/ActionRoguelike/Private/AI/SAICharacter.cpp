@@ -53,7 +53,7 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 		if(CreatedWidget)
 		{
 			CreatedWidget->AttachedActor = this;
-			CreatedWidget->AddToViewport();
+			CreatedWidget->AddToViewport(10);
 		}
 	}
 	SetTargetActor(Pawn);
