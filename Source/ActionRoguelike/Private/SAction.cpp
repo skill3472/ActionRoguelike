@@ -4,6 +4,7 @@
 #include "SAction.h"
 
 #include "SActionComponent.h"
+#include "Net/UnrealNetwork.h"
 
 void USAction::StartAction_Implementation(AActor* Instigator)
 {
@@ -19,7 +20,7 @@ void USAction::StopAction_Implementation(AActor* Instigator)
 {
 	UE_LOG(LogTemp, Log, TEXT("Stopping action: %s"), *GetNameSafe(this));
 
-	ensureAlways(bIsRunning);
+	// ensureAlways(bIsRunning);
 	
 	USActionComponent* OwnerComp = GetOwningComponent();
 	OwnerComp->ActiveGameplayTags.RemoveTags(GrantsTags);
@@ -61,7 +62,26 @@ USActionComponent* USAction::GetOwningComponent() const
 	return Cast<USActionComponent>(GetOuter());
 }
 
+void USAction::OnRep_IsRunning()
+{
+	if(bIsRunning)
+	{
+		StartAction(nullptr);
+	}
+	else
+	{
+		StopAction(nullptr);
+	}
+}
+
 bool USAction::IsRunning() const
 {
 	return bIsRunning;
+}
+
+void USAction::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(USAction, bIsRunning);
 }

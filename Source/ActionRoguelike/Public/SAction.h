@@ -43,6 +43,11 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category="Action")
 	bool bAutoStart;
 
+	bool IsSupportedForNetworking() const override
+	{
+		return true;
+	}
+
 protected:
 	// Tags added to owner actor when actions starts, removed when action stopped
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
@@ -55,5 +60,9 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	USActionComponent* GetOwningComponent() const;
 
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
 	bool bIsRunning;
+
+	UFUNCTION()
+	void OnRep_IsRunning();
 };
