@@ -4,13 +4,19 @@
 #include "SPlayerState.h"
 #include "Net/UnrealNetwork.h"
 
+void ASPlayerState::MulticastCreditsChanged_Implementation(APlayerState* PlayerState, int Delta, int NewCredits)
+{
+	OnCreditsChanged.Broadcast(this, Delta, NewCredits);
+}
+
 bool ASPlayerState::ApplyCreditsChange(int Delta)
 {
 	if(PlayerCredits + Delta < 0)
 		return false;
 
 	PlayerCredits += Delta;
-	OnCreditsChanged.Broadcast(this, Delta, PlayerCredits);
+	if(Delta != 0.0f)
+		MulticastCreditsChanged(this, Delta, PlayerCredits);
 	return true;
 }
 

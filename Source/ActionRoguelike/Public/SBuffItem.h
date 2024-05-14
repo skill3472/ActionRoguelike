@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Stats")
 	int CreditsPrice;
 
-	UPROPERTY(VisibleAnywhere, Category="Stats")
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing="OnRep_BuffUsed", Category="Stats")
 	bool bIsEnabled;
 
 	UFUNCTION()
@@ -39,6 +39,9 @@ protected:
 
 	UFUNCTION()
 	virtual bool ApplyBuff(APawn* InstigatorPawn);
+
+	UFUNCTION()
+	void OnRep_BuffUsed();
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

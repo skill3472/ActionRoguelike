@@ -20,6 +20,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category="Credits")
 	int32 PlayerCredits;
 
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastCreditsChanged(APlayerState* PlayerState, int Delta, int NewCredits);
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Credits")

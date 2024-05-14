@@ -2,6 +2,7 @@
 
 
 #include "SBuffItem.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ASBuffItem::ASBuffItem()
@@ -29,11 +30,7 @@ void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)
 		{
 			PlayerState->ApplyCreditsChange(-CreditsPrice);
 			bIsEnabled = false;
-			SetActorEnableCollision(bIsEnabled);
-			RootComponent->SetVisibility(bIsEnabled, true);
-
-			FTimerHandle TimerHandle_BuffCooldown;
-			GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASBuffItem::Cooldown_TimeElapsed, cooldown);
+			OnRep_BuffUsed();
 		}
 	}
 }
@@ -50,6 +47,15 @@ bool ASBuffItem::ApplyBuff(APawn* InstigatorPawn)
 	return false;
 }
 
+void ASBuffItem::OnRep_BuffUsed()
+{
+	SetActorEnableCollision(bIsEnabled);
+	RootComponent->SetVisibility(bIsEnabled, true);
+
+	FTimerHandle TimerHandle_BuffCooldown;
+	GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASBuffItem::Cooldown_TimeElapsed, cooldown);
+}
+
 // Called when the game starts or when spawned
 void ASBuffItem::BeginPlay()
 {
@@ -61,6 +67,11 @@ void ASBuffItem::BeginPlay()
 void ASBuffItem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
+void ASBuffItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASBuffItem, bIsEnabled);
+}
