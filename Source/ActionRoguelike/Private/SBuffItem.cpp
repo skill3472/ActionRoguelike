@@ -16,20 +16,19 @@ ASBuffItem::ASBuffItem()
 	CreditsPrice = 0;
 	cooldown = 10.0f;
 	
-	bIsEnabled = true;
+	RepData.bIsEnabled = true;
 
 	SetReplicates(true);
 }
 
 void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	ASPlayerState* PlayerState = Cast<ASCharacter>(InstigatorPawn)->GetPlayerState<ASPlayerState>();
-	if(InstigatorPawn && bIsEnabled && PlayerState->HasCredits(CreditsPrice))
+	RepData.PlayerState = Cast<ASCharacter>(InstigatorPawn)->GetPlayerState<ASPlayerState>();
+	if(InstigatorPawn && RepData.bIsEnabled && RepData.PlayerState->HasCredits(CreditsPrice))
 	{
 		if(ApplyBuff(InstigatorPawn))
 		{
-			PlayerState->ApplyCreditsChange(-CreditsPrice);
-			bIsEnabled = false;
+			RepData.bIsEnabled = false;
 			OnRep_BuffUsed();
 		}
 	}
@@ -37,9 +36,9 @@ void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)
 
 void ASBuffItem::Cooldown_TimeElapsed()
 {
-	bIsEnabled = true;
-	SetActorEnableCollision(bIsEnabled);
-	RootComponent->SetVisibility(bIsEnabled, true);
+	RepData.bIsEnabled = true;
+	SetActorEnableCollision(RepData.bIsEnabled);
+	RootComponent->SetVisibility(RepData.bIsEnabled, true);
 }
 
 bool ASBuffItem::ApplyBuff(APawn* InstigatorPawn)
@@ -49,8 +48,9 @@ bool ASBuffItem::ApplyBuff(APawn* InstigatorPawn)
 
 void ASBuffItem::OnRep_BuffUsed()
 {
-	SetActorEnableCollision(bIsEnabled);
-	RootComponent->SetVisibility(bIsEnabled, true);
+	RepData.PlayerState->ApplyCreditsChange(-CreditsPrice);
+	SetActorEnableCollision(RepData.bIsEnabled);
+	RootComponent->SetVisibility(RepData.bIsEnabled, true);
 
 	FTimerHandle TimerHandle_BuffCooldown;
 	GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASBuffItem::Cooldown_TimeElapsed, cooldown);
@@ -73,5 +73,5 @@ void ASBuffItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASBuffItem, bIsEnabled);
+	DOREPLIFETIME(ASBuffItem, RepData);
 }

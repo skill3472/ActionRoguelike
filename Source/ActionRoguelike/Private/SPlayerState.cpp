@@ -6,7 +6,7 @@
 
 void ASPlayerState::MulticastCreditsChanged_Implementation(APlayerState* PlayerState, int Delta, int NewCredits)
 {
-	OnCreditsChanged.Broadcast(this, Delta, NewCredits);
+	OnCreditsChanged.Broadcast(PlayerState, Delta, NewCredits);
 }
 
 bool ASPlayerState::ApplyCreditsChange(int Delta)

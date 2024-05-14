@@ -6,6 +6,7 @@
 #include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SInteractionComponent.h"
+#include "SPlayerController.h"
 #include "SPlayerState.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -38,6 +39,8 @@ ASCharacter::ASCharacter()
 
 	interactionComp = CreateDefaultSubobject<USInteractionComponent>("interactionComp");
 
+	MyController = Cast<ASPlayerController>(GetController());
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
@@ -46,6 +49,8 @@ void ASCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	attributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
+	if(ensure(MyController))
+		MyController->OnPlayerChanged.AddDynamic(this, &ASCharacter::OnPlayerChanged);
 }
 
 FVector ASCharacter::GetPawnViewLocation() const
@@ -158,6 +163,11 @@ void ASCharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent*
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		GetCharacterMovement()->DisableMovement();
 	}
+}
+
+void ASCharacter::OnPlayerChanged(APawn* MyPawn)
+{
+	Destroy(); // @fixme something doesn't work here, the character is not destroyed
 }
 
 /*

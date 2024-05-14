@@ -12,6 +12,7 @@ class USpringArmComponent;
 class USInteractionComponent;
 class UAnimMontage;
 class USAttributeComponent;
+class ASPlayerController;
 
 UCLASS()
 class ACTIONROGUELIKE_API ASCharacter : public ACharacter
@@ -40,6 +41,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName TimeToHitParamName;
+
+	UPROPERTY()
+	ASPlayerController* MyController;
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -55,6 +59,8 @@ protected:
 	void PrimaryInteraction();
 	UFUNCTION()
 	void OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth, float Delta);
+	UFUNCTION()
+	void OnPlayerChanged(APawn* MyPawn);
 	virtual void PostInitializeComponents() override;
 	virtual FVector GetPawnViewLocation() const override;
 public:	
