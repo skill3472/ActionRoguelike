@@ -2,6 +2,7 @@
 
 
 #include "SPlayerState.h"
+#include "Net/UnrealNetwork.h"
 
 bool ASPlayerState::ApplyCreditsChange(int Delta)
 {
@@ -17,11 +18,17 @@ bool ASPlayerState::HasCredits(int Amount)
 {
 	if(PlayerCredits < Amount)
 		return false;
-	else
-		return true;
+	return true;
 }
 
 int32 ASPlayerState::GetCredits()
 {
 	return PlayerCredits;
+}
+
+void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ASPlayerState, PlayerCredits);
 }

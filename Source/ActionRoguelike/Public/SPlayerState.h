@@ -17,7 +17,7 @@ class ACTIONROGUELIKE_API ASPlayerState : public APlayerState
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category="Credits")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category="Credits")
 	int32 PlayerCredits;
 
 
