@@ -2,6 +2,8 @@
 
 
 #include "SPlayerState.h"
+
+#include "SSaveGame.h"
 #include "Net/UnrealNetwork.h"
 
 void ASPlayerState::MulticastCreditsChanged_Implementation(APlayerState* PlayerState, int Delta, int NewCredits)
@@ -30,6 +32,22 @@ bool ASPlayerState::HasCredits(int Amount)
 int32 ASPlayerState::GetCredits()
 {
 	return PlayerCredits;
+}
+
+void ASPlayerState::SavePlayerState_Implementation(USSaveGame* SaveObject)
+{
+	if(SaveObject)
+	{
+		SaveObject->Credits = PlayerCredits;
+	}
+}
+
+void ASPlayerState::LoadPlayerState_Implementation(USSaveGame* SaveObject)
+{
+	if(SaveObject)
+	{
+		PlayerCredits = SaveObject->Credits;
+	}
 }
 
 void ASPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

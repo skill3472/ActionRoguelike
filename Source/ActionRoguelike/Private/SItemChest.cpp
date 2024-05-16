@@ -22,6 +22,12 @@ ASItemChest::ASItemChest()
 	SetReplicates(true);
 }
 
+void ASItemChest::OnActorLoaded_Implementation()
+{
+	// ISGameplayInterface::OnActorLoaded_Implementation();
+	OnRep_LidOpened();
+}
+
 void ASItemChest::Interact_Implementation(APawn* InstigatorPawn) // @fixme: doesn't work, should fix
 {
 	bLidOpened = !bLidOpened;

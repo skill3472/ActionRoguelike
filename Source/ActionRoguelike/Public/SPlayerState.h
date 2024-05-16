@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerState.h"
 #include "SPlayerState.generated.h"
 
+class USSaveGame;
 /**
  * 
  */
@@ -35,4 +36,10 @@ public:
 	
 	UPROPERTY(BlueprintAssignable)
 	FOnCreditsChanged OnCreditsChanged;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SavePlayerState(USSaveGame* SaveObject);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LoadPlayerState(USSaveGame* SaveObject);
 };

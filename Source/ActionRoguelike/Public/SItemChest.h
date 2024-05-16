@@ -24,7 +24,9 @@ public:
 
 protected:
 
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly) // RepNotify
+	void OnActorLoaded_Implementation() override;
+	
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly, SaveGame) // RepNotify
 	bool bLidOpened;
 
 	UFUNCTION()

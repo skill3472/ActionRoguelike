@@ -13,9 +13,13 @@
 
 class UEnvQuery;
 class UCurveFloat;
+class USSaveGame;
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveLoaded);
+
 UCLASS()
 class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
 {
@@ -30,6 +34,16 @@ public:
 	void KillAll();
 
 	virtual void OnActorKilled(AActor* Victim, AActor* Killer);
+
+	UFUNCTION(BlueprintCallable, Category="SaveGame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
+
+	UPROPERTY(BlueprintAssignable)
+	FOnSaveLoaded OnSaveLoaded;
+
+	// virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 	
 protected:
 	FTimerHandle TimerHandle_SpawnBots;
@@ -60,6 +74,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Buffs")
 	int AmountOfBuffsToSpawn;
+
+	UPROPERTY()
+	USSaveGame* CurrentSaveGame;
+
+	UPROPERTY()
+	FString SlotName;
 
 	UFUNCTION()
 	void RespawnPlayer_TimeElapsed(AController* Controller);
