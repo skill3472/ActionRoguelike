@@ -39,10 +39,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, Category="Rage")
 	bool bUsesRage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Rage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Rage")
 	float Rage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Rage")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category="Rage")
 	float MaxRage;
 
 	/* Amount to multiply the damage by, to get the Rage value to add. */
@@ -53,6 +53,9 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastHealthChanged(AActor* InstigatorActor, float NewHealth, float Delta);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRageChanged(AActor* InstigatorActor, float NewRage, float Delta);
 
 public:
 	UFUNCTION(BlueprintCallable)

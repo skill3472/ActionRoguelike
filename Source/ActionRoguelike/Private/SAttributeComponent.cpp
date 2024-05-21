@@ -87,7 +87,8 @@ bool USAttributeComponent::ApplyRageChange(AActor* InstigatorActor, float Delta)
 		float OldRage = Rage;
 		Rage = FMath::Clamp(Rage + Delta, 0.0f, MaxRage);
 		float ActualDelta = Rage - OldRage;
-		OnRageChanged.Broadcast(InstigatorActor, this, Rage, ActualDelta);
+		if (ActualDelta != 0)
+			MulticastRageChanged(InstigatorActor, Rage, ActualDelta);
 		
 		return ActualDelta != 0;
 	}
@@ -136,6 +137,11 @@ float USAttributeComponent::GetRage()
 void USAttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatorActor, float NewHealth, float Delta)
 {
 	OnHealthChanged.Broadcast(InstigatorActor, this, NewHealth, Delta);
+}
+
+void USAttributeComponent::MulticastRageChanged_Implementation(AActor* InstigatorActor, float NewRage, float Delta)
+{
+	OnRageChanged.Broadcast(InstigatorActor, this, NewRage, Delta);
 }
 
 void USAttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

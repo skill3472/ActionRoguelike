@@ -16,44 +16,41 @@ ASBuffItem::ASBuffItem()
 	CreditsPrice = 0;
 	cooldown = 10.0f;
 	
-	RepData.bIsEnabled = true;
+	bIsActive = true;
 
 	SetReplicates(true);
 }
 
 void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)
 {
-	RepData.PlayerState = Cast<ASCharacter>(InstigatorPawn)->GetPlayerState<ASPlayerState>();
-	if(InstigatorPawn && RepData.bIsEnabled && RepData.PlayerState->HasCredits(CreditsPrice))
+	ASPlayerState* PlayerState = Cast<ASCharacter>(InstigatorPawn)->GetPlayerState<ASPlayerState>();
+	if(InstigatorPawn && bIsActive && PlayerState->HasCredits(CreditsPrice))
 	{
 		if(ApplyBuff(InstigatorPawn))
 		{
-			RepData.bIsEnabled = false;
-			OnRep_BuffUsed();
+			PlayerState->ApplyCreditsChange(-CreditsPrice);
+			SetPowerupState(false);
+
+			FTimerHandle TimerHandle_BuffCooldown;
+			GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASBuffItem::Cooldown_TimeElapsed, cooldown);
 		}
 	}
 }
 
 void ASBuffItem::Cooldown_TimeElapsed()
 {
-	RepData.bIsEnabled = true;
-	SetActorEnableCollision(RepData.bIsEnabled);
-	RootComponent->SetVisibility(RepData.bIsEnabled, true);
+	SetPowerupState(true);
 }
 
-bool ASBuffItem::ApplyBuff(APawn* InstigatorPawn)
+bool ASBuffItem::ApplyBuff(APawn* InstigatorPawn) // Placeholder for base class
 {
 	return false;
 }
 
-void ASBuffItem::OnRep_BuffUsed()
+void ASBuffItem::OnRep_IsActive()
 {
-	RepData.PlayerState->ApplyCreditsChange(-CreditsPrice);
-	SetActorEnableCollision(RepData.bIsEnabled);
-	RootComponent->SetVisibility(RepData.bIsEnabled, true);
-
-	FTimerHandle TimerHandle_BuffCooldown;
-	GetWorldTimerManager().SetTimer(TimerHandle_BuffCooldown, this, &ASBuffItem::Cooldown_TimeElapsed, cooldown);
+	SetActorEnableCollision(bIsActive);
+	RootComponent->SetVisibility(bIsActive, true);
 }
 
 // Called when the game starts or when spawned
@@ -61,6 +58,12 @@ void ASBuffItem::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void ASBuffItem::SetPowerupState(bool bNewIsActive)
+{
+	bIsActive = bNewIsActive;
+	OnRep_IsActive();
 }
 
 // Called every frame
@@ -73,5 +76,5 @@ void ASBuffItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifeti
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(ASBuffItem, RepData);
+	DOREPLIFETIME(ASBuffItem, bIsActive);
 }

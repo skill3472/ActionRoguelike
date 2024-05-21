@@ -49,19 +49,14 @@ void ASAICharacter::OnPawnSeen(APawn* Pawn)
 	
 	if(TargetActor && TargetActor != Pawn)
 	{
-		USWorldUserWidget* CreatedWidget = CreateWidget<USWorldUserWidget>(GetWorld(), PlayerSeenWidgetClass);
-		if(CreatedWidget)
-		{
-			CreatedWidget->AttachedActor = this;
-			CreatedWidget->AddToViewport(10);
-		}
+		MulticastPawnSeen();
 	}
 	SetTargetActor(Pawn);
 	// DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::White, 4.0f, true);
 }
 
 void ASAICharacter::OnHealthChanged(AActor* InstigatorActor, USAttributeComponent* OwningComp, float NewHealth,
-	float Delta)
+                                    float Delta)
 {
 	if(AAIController* AIC = Cast<AAIController>(GetController()))
 	{
@@ -120,3 +115,12 @@ void ASAICharacter::SetTargetActor(AActor* NewTarget)
 	}
 }
 
+void ASAICharacter::MulticastPawnSeen_Implementation()
+{
+	USWorldUserWidget* CreatedWidget = CreateWidget<USWorldUserWidget>(GetWorld(), PlayerSeenWidgetClass);
+	if(CreatedWidget)
+	{
+		CreatedWidget->AttachedActor = this;
+		CreatedWidget->AddToViewport(10);
+	}
+}

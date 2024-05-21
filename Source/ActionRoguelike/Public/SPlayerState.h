@@ -18,11 +18,16 @@ class ACTIONROGUELIKE_API ASPlayerState : public APlayerState
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Replicated, Category="Credits")
+	ASPlayerState();
+	
+	UPROPERTY(VisibleAnywhere, ReplicatedUsing="OnRep_PlayerCredits", Category="Credits")
 	int32 PlayerCredits;
 
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastCreditsChanged(APlayerState* PlayerState, int Delta, int NewCredits);
+	UFUNCTION()
+	void OnRep_PlayerCredits(int32 OldCredits);
+	
+	// UFUNCTION(NetMulticast, Reliable)
+	// void MulticastCreditsChanged(APlayerState* PlayerState, int Delta, int NewCredits);
 
 public:
 	UFUNCTION(BlueprintCallable, Category="Credits")

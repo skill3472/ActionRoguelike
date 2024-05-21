@@ -9,17 +9,6 @@
 #include "SPlayerState.h"
 #include "SBuffItem.generated.h"
 
-USTRUCT()
-struct FRepData
-{
-	GENERATED_BODY()
-public:
-	UPROPERTY()
-	bool bIsEnabled;
-
-	UPROPERTY()
-	ASPlayerState* PlayerState;
-};
 
 UCLASS()
 class ACTIONROGUELIKE_API ASBuffItem : public AActor, public ISGameplayInterface
@@ -40,8 +29,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Stats")
 	int CreditsPrice;
 
-	UPROPERTY(VisibleAnywhere, ReplicatedUsing="OnRep_BuffUsed", Category="Stats")
-	FRepData RepData;
+	UPROPERTY(ReplicatedUsing="OnRep_IsActive")
+	bool bIsActive;
 
 	UFUNCTION()
 	virtual void Interact_Implementation(APawn* InstigatorPawn);
@@ -53,7 +42,10 @@ protected:
 	virtual bool ApplyBuff(APawn* InstigatorPawn);
 
 	UFUNCTION()
-	void OnRep_BuffUsed();
+	void OnRep_IsActive();
+
+	UFUNCTION()
+	void SetPowerupState(bool bNewIsActive);
 	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
