@@ -64,6 +64,9 @@ public:
 	}
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
+	UTexture2D* Icon;
+	
 	// Tags added to owner actor when actions starts, removed when action stopped
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTagContainer GrantsTags;
@@ -77,7 +80,9 @@ protected:
 
 	UPROPERTY(ReplicatedUsing="OnRep_RepData")
 	FActionRepData RepData;
-	// bool bIsRunning;
+
+	UPROPERTY(Replicated)
+	float TimeStarted;
 
 	UFUNCTION()
 	void OnRep_RepData();
