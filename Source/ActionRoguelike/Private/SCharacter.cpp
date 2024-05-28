@@ -49,7 +49,7 @@ void ASCharacter::PostInitializeComponents()
 	Super::PostInitializeComponents();
 
 	attributeComp->OnHealthChanged.AddDynamic(this, &ASCharacter::OnHealthChanged);
-	if(ensure(MyController))
+	if(MyController)
 		MyController->OnPlayerChanged.AddDynamic(this, &ASCharacter::OnPlayerChanged);
 }
 

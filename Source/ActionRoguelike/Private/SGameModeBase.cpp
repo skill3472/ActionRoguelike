@@ -4,10 +4,14 @@
 #include "SGameModeBase.h"
 
 #include "EngineUtils.h"
+#include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
+#include "SMonsterData.h"
 #include "SPlayerState.h"
 #include "SSaveGame.h"
+#include "ActionRoguelike/ActionRoguelike.h"
+#include "Engine/AssetManager.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Serialization/ObjectAndNameAsStringProxyArchive.h"
@@ -74,10 +78,10 @@ void ASGameModeBase::SpawnBots_TimeElapsed()
 	
 	UEnvQueryInstanceBlueprintWrapper* QueryInstance = UEnvQueryManager::RunEQSQuery(this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 	if(ensure(QueryInstance))
-		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnQueryCompleted);
+		QueryInstance->GetOnQueryFinishedEvent().AddDynamic(this, &ASGameModeBase::OnSpawnBotQueryCompleted);
 }
 
-void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
+void ASGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus)
 {
 	if(QueryStatus != EEnvQueryStatus::Success)
 	{
@@ -88,9 +92,53 @@ void ASGameModeBase::OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryIn
 	TArray<FVector> Locations = QueryInstance->GetResultsAsLocations();
 	if(Locations.IsValidIndex(0))
 	{
-		GetWorld()->SpawnActor<AActor>(MinionClass, Locations[0], FRotator::ZeroRotator);
-		if(CVarDrawBotSpawnPoint.GetValueOnGameThread())
-			DrawDebugSphere(GetWorld(), Locations[0], 50.0f, 20, FColor::Blue, false, 60.0f);
+		if(MonsterTable)
+		{
+			TArray<FMonsterInfoRow*> Rows;
+			MonsterTable->GetAllRows("", Rows);
+
+			// Random enemy @fixme: add a better system for picking enemies, based on weight
+			int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
+			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
+
+			UAssetManager* Manager = UAssetManager::GetIfInitialized();
+			if(Manager)
+			{
+				TArray<FName> Bundles;
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+				Manager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
+			}
+		}
+	}
+}
+
+void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
+{
+	UAssetManager* Manager = UAssetManager::GetIfInitialized();
+	if(Manager)
+	{
+		USMonsterData* MonsterData = Cast<USMonsterData>(Manager->GetPrimaryAssetObject(LoadedId));
+		if(MonsterData)
+		{
+			AActor* SpawnedBot = GetWorld()->SpawnActor<AActor>(MonsterData->MonsterClass, SpawnLocation, FRotator::ZeroRotator);
+			if(SpawnedBot)
+			{
+				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(SpawnedBot), *GetNameSafe(MonsterData)));
+			
+				// Grants buffs etc.
+				USActionComponent* BotActionComp = USActionComponent::GetActionComp(SpawnedBot);
+				if(BotActionComp)
+				{
+					for(TSubclassOf<USAction> ActionClass : MonsterData->Actions)
+					{
+						BotActionComp->AddAction(SpawnedBot, ActionClass);
+					}
+				}
+			}
+			
+			if(CVarDrawBotSpawnPoint.GetValueOnGameThread())
+				DrawDebugSphere(GetWorld(), SpawnLocation, 50.0f, 20, FColor::Blue, false, 60.0f);
+		}
 	}
 }
 

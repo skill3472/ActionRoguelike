@@ -11,14 +11,45 @@
 #include "SGameModeBase.generated.h"
 
 
+class USMonsterData;
 class UEnvQuery;
 class UCurveFloat;
 class USSaveGame;
-/**
- * 
- */
+class UDataTable;
+
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSaveLoaded);
+
+// DataTable Row for spawning monsters in GameMode
+USTRUCT(BlueprintType)
+struct FMonsterInfoRow : public FTableRowBase
+{
+	GENERATED_BODY();
+
+public:
+
+	FMonsterInfoRow()
+	{
+		Weight = 1.0f;
+		SpawnCost = 5.0f;
+		KillReward = 20.0f;
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FPrimaryAssetId MonsterId;
+
+	// Relative chance to pick this monster
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float Weight;
+
+	// Points required to spend by gamemode to spawn this unit.
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float SpawnCost;
+
+	// Amount of credits gained for killing this monster
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 KillReward;
+};
 
 UCLASS()
 class ACTIONROGUELIKE_API ASGameModeBase : public AGameModeBase
@@ -48,8 +79,8 @@ public:
 protected:
 	FTimerHandle TimerHandle_SpawnBots;
 
-	UPROPERTY(EditDefaultsOnly, Category="AI")
-	TSubclassOf<AActor> MinionClass;
+	// UPROPERTY(EditDefaultsOnly, Category="AI")
+	// TSubclassOf<AActor> MinionClass;
 	
 	UPROPERTY(EditDefaultsOnly, Category="AI")
 	float SpawnTimerInterval;
@@ -81,6 +112,10 @@ protected:
 	UPROPERTY()
 	FString SlotName;
 
+	// All available monsters.
+	UPROPERTY(EditDefaultsOnly, Category="AI")
+	UDataTable* MonsterTable;
+
 	UFUNCTION()
 	void RespawnPlayer_TimeElapsed(AController* Controller);
 
@@ -88,7 +123,10 @@ protected:
 	void SpawnBots_TimeElapsed();
 
 	UFUNCTION()
-	void OnQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+
+	UFUNCTION()
+	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
 
 	UFUNCTION()
 	void SpawnBuffs();

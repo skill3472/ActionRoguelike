@@ -65,7 +65,7 @@ public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="UI")
-	UTexture2D* Icon;
+	TSoftObjectPtr<UTexture2D> Icon;
 	
 	// Tags added to owner actor when actions starts, removed when action stopped
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")

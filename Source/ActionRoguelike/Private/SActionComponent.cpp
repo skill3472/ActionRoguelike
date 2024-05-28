@@ -141,6 +141,14 @@ bool USActionComponent::HasAction(TSubclassOf<USAction> ActionToCheck)
 	return false;
 }
 
+USActionComponent* USActionComponent::GetActionComp(AActor* FromActor)
+{
+	if(FromActor)
+	{
+		return FromActor->FindComponentByClass<USActionComponent>();
+	}
+	return nullptr;
+}
 
 void USActionComponent::ServerStartAction_Implementation(AActor* Instigator, FName ActionName)
 {
