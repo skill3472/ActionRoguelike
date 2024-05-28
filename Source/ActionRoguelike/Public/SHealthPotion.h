@@ -18,6 +18,8 @@ public:
 	// Sets default values for this actor's properties
 	ASHealthPotion();
 
+	FText GetInteractText_Implementation(APawn* InstigatorPawn);
+
 protected:
 	bool ApplyBuff(APawn* InstigatorPawn) override;
 

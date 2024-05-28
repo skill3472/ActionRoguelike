@@ -66,6 +66,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsLowHealth();
+
+	UFUNCTION(BlueprintCallable)
+	bool IsFullHealth();
 	
 	UFUNCTION(BlueprintCallable)
 	bool ApplyHealthChange(AActor* InstigatorActor, float delta);

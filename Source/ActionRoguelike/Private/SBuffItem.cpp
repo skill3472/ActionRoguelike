@@ -37,6 +37,11 @@ void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)
 	}
 }
 
+FText ASBuffItem::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	return FText::GetEmpty();
+}
+
 void ASBuffItem::Cooldown_TimeElapsed()
 {
 	SetPowerupState(true);

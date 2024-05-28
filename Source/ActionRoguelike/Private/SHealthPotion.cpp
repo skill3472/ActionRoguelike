@@ -11,7 +11,7 @@ ASHealthPotion::ASHealthPotion()
 
 bool ASHealthPotion::ApplyBuff(APawn* InstigatorPawn)
 {
-	USAttributeComponent* attributeComp = Cast<USAttributeComponent>(InstigatorPawn->GetComponentByClass(USAttributeComponent::StaticClass()));
+	USAttributeComponent* attributeComp = USAttributeComponent::GetAttributes(InstigatorPawn);
 	if(attributeComp)
 	{
 		if(attributeComp->ApplyHealthChange(this, healAmount))
@@ -22,3 +22,13 @@ bool ASHealthPotion::ApplyBuff(APawn* InstigatorPawn)
 	return false;
 }
 
+FText ASHealthPotion::GetInteractText_Implementation(APawn* InstigatorPawn)
+{
+	USAttributeComponent* AttributeComp = USAttributeComponent::GetAttributes(InstigatorPawn);
+	if(AttributeComp && AttributeComp->IsFullHealth())
+	{
+		return NSLOCTEXT("InteractableActors", "HealthPotion_FullHealthWarning", "Already at full health.");
+	}
+
+	return FText::Format(NSLOCTEXT("InteractableActors", "HealthPotion_InteractMessage", "Costs {0} Credits. Restores full health."), CreditsPrice);
+}

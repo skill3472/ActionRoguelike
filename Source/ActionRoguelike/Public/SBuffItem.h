@@ -33,9 +33,6 @@ protected:
 	bool bIsActive;
 
 	UFUNCTION()
-	virtual void Interact_Implementation(APawn* InstigatorPawn);
-
-	UFUNCTION()
 	virtual void Cooldown_TimeElapsed();
 
 	UFUNCTION()
@@ -50,7 +47,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
+
+	UFUNCTION()
+	virtual void Interact_Implementation(APawn* InstigatorPawn);
+
+	FText GetInteractText_Implementation(APawn* InstigatorPawn);
+	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

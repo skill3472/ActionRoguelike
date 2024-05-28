@@ -39,6 +39,11 @@ bool USAttributeComponent::IsLowHealth()
 	return Health <= LowHealthThreshold;
 }
 
+bool USAttributeComponent::IsFullHealth()
+{
+	return Health == maxHealth;
+}
+
 bool USAttributeComponent::ApplyHealthChange(AActor* InstigatorActor, float delta)
 {
 	if(!GetOwner()->CanBeDamaged() && delta < 0.0f)
