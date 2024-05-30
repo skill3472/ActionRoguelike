@@ -98,8 +98,23 @@ void ASGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper*
 			TArray<FMonsterInfoRow*> Rows;
 			MonsterTable->GetAllRows("", Rows);
 
-			// Random enemy @fixme: add a better system for picking enemies, based on weight
-			int32 RandomIndex = FMath::RandRange(0, Rows.Num()-1);
+			float WeightSum = 0.0f;
+			for (FMonsterInfoRow* Row : Rows)
+			{
+				WeightSum += Row->Weight;
+			}
+			float RandNum = FMath::RandRange(0.0f, WeightSum);
+			int32 RandomIndex = 0;
+			for (int i = 0; i < Rows.Num(); i++)
+			{
+				if(RandNum < Rows[i]->Weight)
+				{
+					RandomIndex = i;
+					break;
+				}
+				RandNum -= Rows[i]->Weight;
+			}
+			
 			FMonsterInfoRow* SelectedRow = Rows[RandomIndex];
 
 			UAssetManager* Manager = UAssetManager::GetIfInitialized();
