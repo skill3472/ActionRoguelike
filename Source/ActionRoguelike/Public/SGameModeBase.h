@@ -60,6 +60,7 @@ public:
 	ASGameModeBase();
 
 	virtual void StartPlay() override;
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
 	UFUNCTION(Exec)
 	void KillAll();
@@ -78,6 +79,7 @@ public:
 	
 protected:
 	FTimerHandle TimerHandle_SpawnBots;
+	FString SelectedSaveSlot;
 
 	// UPROPERTY(EditDefaultsOnly, Category="AI")
 	// TSubclassOf<AActor> MinionClass;

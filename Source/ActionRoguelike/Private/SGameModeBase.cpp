@@ -36,9 +36,19 @@ void ASGameModeBase::StartPlay()
 {
 	Super::StartPlay();
 
+	
 	LoadSaveGame();
 	SpawnBuffs();
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnBots, this, &ASGameModeBase::SpawnBots_TimeElapsed, SpawnTimerInterval, true);
+}
+
+void ASGameModeBase::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	
+	SelectedSaveSlot = UGameplayStatics::ParseOption(Options, "SaveGame");
+	if(SelectedSaveSlot.Len() > 0)
+		SlotName = SelectedSaveSlot;
 }
 
 void ASGameModeBase::SpawnBots_TimeElapsed()

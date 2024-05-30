@@ -41,7 +41,7 @@ void ASProjectile::OnActorOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	if(OtherActor && OtherActor != GetInstigator())
 	{
-		USAttributeComponent* attributeComp = Cast<USAttributeComponent>(OtherActor->GetComponentByClass(USAttributeComponent::StaticClass()));
+		USAttributeComponent* attributeComp = USAttributeComponent::GetAttributes(OtherActor);
 		if(attributeComp)
 		{
 			UGameplayStatics::PlaySoundAtLocation(this, Cast<USoundBase>(explodeSound), GetActorLocation());
