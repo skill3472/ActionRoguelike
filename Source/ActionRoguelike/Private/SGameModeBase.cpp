@@ -106,14 +106,14 @@ void ASGameModeBase::OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper*
 			if(Manager)
 			{
 				TArray<FName> Bundles;
-				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0]);
+				FStreamableDelegate Delegate = FStreamableDelegate::CreateUObject(this, &ASGameModeBase::OnMonsterLoaded, SelectedRow->MonsterId, Locations[0], SelectedRow->KillReward);
 				Manager->LoadPrimaryAsset(SelectedRow->MonsterId, Bundles, Delegate);
 			}
 		}
 	}
 }
 
-void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation)
+void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation, int32 KillCredits)
 {
 	UAssetManager* Manager = UAssetManager::GetIfInitialized();
 	if(Manager)
@@ -125,7 +125,13 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoca
 			if(SpawnedBot)
 			{
 				LogOnScreen(this, FString::Printf(TEXT("Spawned enemy: %s (%s)"), *GetNameSafe(SpawnedBot), *GetNameSafe(MonsterData)));
-			
+
+				// Set correct kill credits
+				ASAICharacter* SpawedBotCharacter = Cast<ASAICharacter>(SpawnedBot);
+				if (ensure(SpawedBotCharacter))
+				{
+					SpawedBotCharacter->SetKillCredits(KillCredits);
+				}
 				// Grants buffs etc.
 				USActionComponent* BotActionComp = USActionComponent::GetActionComp(SpawnedBot);
 				if(BotActionComp)
@@ -206,7 +212,7 @@ void ASGameModeBase::OnActorKilled(AActor* Victim, AActor* Killer)
 			ASPlayerState* PlayerState = Cast<ASPlayerState>(PlayerKiller->GetPlayerState());
 			if(ensure(PlayerState))
 			{
-				PlayerState->ApplyCreditsChange(CreditsFromBotKill);
+				PlayerState->ApplyCreditsChange(Bot->GetKillCredits());
 			}	
 		}
 	}

@@ -28,6 +28,7 @@ ASAICharacter::ASAICharacter()
 	GetMesh()->SetGenerateOverlapEvents(true);
 
 	TimeToHitParamName = "TimeToHit";
+	KillCredits = 20;
 }
 
 void ASAICharacter::PostInitializeComponents()
@@ -36,6 +37,16 @@ void ASAICharacter::PostInitializeComponents()
 	
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &ASAICharacter::OnPawnSeen);
 	AttributeComp->OnHealthChanged.AddDynamic(this, &ASAICharacter::OnHealthChanged);
+}
+
+int32 ASAICharacter::GetKillCredits() const
+{
+	return KillCredits;
+}
+
+void ASAICharacter::SetKillCredits(int32 KillCreditsToSet)
+{
+	KillCredits = KillCreditsToSet;
 }
 
 void ASAICharacter::OnPawnSeen(APawn* Pawn)

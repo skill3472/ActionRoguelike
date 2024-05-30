@@ -126,7 +126,7 @@ protected:
 	void OnSpawnBotQueryCompleted(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 	UFUNCTION()
-	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation);
+	void OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLocation, int32 KillCredits);
 
 	UFUNCTION()
 	void SpawnBuffs();

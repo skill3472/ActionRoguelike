@@ -25,6 +25,15 @@ protected:
 
 	virtual void PostInitializeComponents() override;
 
+	// Amount of credits to grant the Player from killing this enemy.
+	UPROPERTY(EditAnywhere, Category="Credits")
+	int32 KillCredits;
+
+public:
+	int32 GetKillCredits() const;
+	void SetKillCredits(int32 KillCredits);
+
+protected:
 	UPROPERTY(VisibleAnywhere, Category="Effects")
 	FName TimeToHitParamName;
 
