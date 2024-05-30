@@ -4,6 +4,7 @@
 #include "SGameModeBase.h"
 
 #include "EngineUtils.h"
+#include "SAction.h"
 #include "SActionComponent.h"
 #include "SAttributeComponent.h"
 #include "SCharacter.h"
@@ -131,7 +132,8 @@ void ASGameModeBase::OnMonsterLoaded(FPrimaryAssetId LoadedId, FVector SpawnLoca
 				{
 					for(TSubclassOf<USAction> ActionClass : MonsterData->Actions)
 					{
-						BotActionComp->AddAction(SpawnedBot, ActionClass);
+						if(ActionClass)
+							BotActionComp->AddAction(SpawnedBot, ActionClass);
 					}
 				}
 			}

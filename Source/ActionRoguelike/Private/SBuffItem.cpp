@@ -18,7 +18,7 @@ ASBuffItem::ASBuffItem()
 	
 	bIsActive = true;
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ASBuffItem::Interact_Implementation(APawn* InstigatorPawn)

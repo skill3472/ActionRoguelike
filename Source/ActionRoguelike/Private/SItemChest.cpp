@@ -19,7 +19,7 @@ ASItemChest::ASItemChest()
 	
 	TargetPitch = 110;
 
-	SetReplicates(true);
+	bReplicates = true;
 }
 
 void ASItemChest::OnActorLoaded_Implementation()
