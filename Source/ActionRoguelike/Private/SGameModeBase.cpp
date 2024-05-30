@@ -201,10 +201,13 @@ void ASGameModeBase::OnActorKilled(AActor* Victim, AActor* Killer)
 	if(Bot)
 	{
 		ASCharacter* PlayerKiller = Cast<ASCharacter>(Killer);
-		ASPlayerState* PlayerState = Cast<ASPlayerState>(PlayerKiller->GetPlayerState());
-		if(ensure(PlayerState))
+		if(PlayerKiller)
 		{
-			PlayerState->ApplyCreditsChange(CreditsFromBotKill);
+			ASPlayerState* PlayerState = Cast<ASPlayerState>(PlayerKiller->GetPlayerState());
+			if(ensure(PlayerState))
+			{
+				PlayerState->ApplyCreditsChange(CreditsFromBotKill);
+			}	
 		}
 	}
 	
